@@ -1,4 +1,4 @@
-from manim import Scene, Circle, Create, PINK, Text, Point, VGroup, Axes, Line, Arrow, ImageMobject
+from manim import Scene, Circle, Create, PINK, Text, Point, Group, Axes, Line, Arrow, ImageMobject, Add, AnimationGroup
 import numpy as np
 
 class CreateCircle(Scene):
@@ -10,10 +10,9 @@ class CreateCircle(Scene):
 class CreateGaussian(Scene):
     def construct(self):
 
-        noise = ImageMobject("noise.png")  # load the image
-
         # Randomly generate 100 points in a gaussian distribution
-        for _ in range(1000):
+        number_of_points = 5000
+        for i in range(number_of_points):
             x = np.random.normal(0, 1)
             y = np.random.normal(0, 1)
 
@@ -24,11 +23,26 @@ class CreateGaussian(Scene):
             point = Point(location=[x, y, 0], color=PINK)  # create a point at the random location
             self.add(point)
 
+            if i % (number_of_points / 2) == 0:
+                self.wait(0.2)
 
-        # Create a list of circles to represent the points
+        
+        self.wait(2)
+
+        point = Point(location=[1.7, -0.4, 0], color=PINK)  # create a point at the random location
+        self.add(point)
+
+        noise = ImageMobject("noise.png")  # load the image
+        noise.scale(0.3)
+        noise.move_to([4, 0, 0])
+        noise.z_index = 1
+
+        # Add line from image to a random point
+        line = Line(start=noise.get_center(), end=point.get_center(), color=PINK)
+        # Create both line and nosie
+        self.add(noise)
+        self.play(AnimationGroup(Create(line), Add(noise)))
+        self.wait(2)
 
 
-        # Add some text to the scene
-        text = Text("Gaussian Surface")
-        self.play(Create(text))  # show the text on screen
         self.wait(2)
