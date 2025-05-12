@@ -1,4 +1,4 @@
-from manim import Scene, Circle, Create, PINK, Text, Point, Group, Axes, Line, Arrow, ImageMobject, Add, AnimationGroup
+from manim import Scene, Circle, Create, PINK, Text, Point, Group, Axes, Line, Arrow, ImageMobject, Add, AnimationGroup, VectorField, Dot, GRAY, LEFT, RIGHT, UP, ArrowVectorField
 import numpy as np
 
 class CreateCircle(Scene):
@@ -46,3 +46,44 @@ class CreateGaussian(Scene):
 
 
         self.wait(2)
+
+from manim import *
+
+class EvolvingVectorField(Scene):
+    def construct(self):
+        # Axes setup
+        axes = Axes(
+            x_range=[-5, 5, 1],
+            y_range=[-3, 3, 1],
+            axis_config={"color": GREY},
+        )
+        self.add(axes)
+
+        # Time tracker
+        time_tracker = ValueTracker(0)
+
+        # Vector field function that evolves over time
+        def evolving_field_func(pos):
+            x, y = pos[:2]
+            t = time_tracker.get_value()
+            return np.array([
+                np.sin(y + t),
+                np.cos(x - t),
+                0
+            ])
+
+        # Always redraw the vector field
+        vector_field = always_redraw(
+            lambda: ArrowVectorField(
+                evolving_field_func,
+                x_range=[-5, 5, 1],
+                y_range=[-3, 3, 1],
+                colors=[BLUE, GREEN, YELLOW],
+                vector_config={"stroke_width": 2},
+            )
+        )
+
+        self.add(vector_field)
+
+        # Animate time progression
+        self.play(time_tracker.animate.increment_value(2 * PI), run_time=10, rate_func=linear)
